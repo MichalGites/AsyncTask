@@ -25,24 +25,29 @@ public class MainActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         button = (Button) findViewById(R.id.buttonStart);
 
-        new FakeTask().execute(/* tutaj argumenty jeśli klasa przyjmuje - my mamy void */);
+        // zrobione jako przyklad przekazywania argumentu do doInBackground
+        String text = "Witaj świecie";
+        // trim pozbywa sie z ciagu znakow wszystkich bialych znakow
+        progressBar.setMax(text.trim().length());
+        // uzaleznilismy ilosc obrotow naszej petli od dlugosci zmiennej text - ilosci jej znakow
+        new FakeTask().execute(text);
     }
 
     // 1. (typ generyczny) Jaki parametr przyjmuje doInBackground
     // 2. cp przyjmuje on ProgressUpdate
     // 3. co zwraca metoda doInBackground i onPostExecute
-    private class FakeTask extends AsyncTask<Void, Integer, Void>{
+    private class FakeTask extends AsyncTask<String, Integer, Void>{
 
         // ta metoda wykonuje sie w innym watku - dzialanie w tle
         @Override
-        protected Void doInBackground(Void... strings) {
+        protected Void doInBackground(String... arg) {
             // wielokropek pozwala nam wpisywac wiele argumetow typu String - tworzy taka tablice argumentow
             //publishProgress("20%", "asd", "asaas");
-            for (int i=0; i<6; i++){
+            for (int i=0; i<= arg[0].trim().length(); i++){
                 publishProgress(i);
                 try {
                     // To jest nieprawdziwe zadanie celem prezentacji
-                    Thread.sleep(2000);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -69,28 +74,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onProgressUpdate(Integer... values) {
             // ta metoda wykonuje sie w trakcie wykonywania doInBackground
             // mozna dzieki niej edytowac progressBar np
-            switch (values[0]){
-                case 1: {
-                    progressBar.setProgress(20);
-                    break;
-                }
-                case 2: {
-                    progressBar.setProgress(40);
-                    break;
-                }
-                case 3: {
-                    progressBar.setProgress(60);
-                    break;
-                }
-                case 4: {
-                    progressBar.setProgress(80);
-                    break;
-                }
-                case 5: {
-                    progressBar.setProgress(100);
-                    break;
-                }
-            }
+            progressBar.setProgress(values[0]);
         }
     }
 
